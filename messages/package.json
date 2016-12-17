@@ -6,13 +6,14 @@
   "dependencies": {
     "botbuilder": "^3.4.2",
     "botbuilder-azure": "0.0.1",
-    "imgflipper": "^1.0.1"
-  },
-  "devDependencies": {
+    "imgflipper": "^1.0.1",
     "gulp": "^3.9.1",
     "gulp-typescript": "^3.1.3",
     "restify": "^4.1.1",
     "typescript": "^2.1.4"
+  },
+  "devDependencies": {
+
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
