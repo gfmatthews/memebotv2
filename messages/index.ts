@@ -8,6 +8,8 @@ import builder = require("botbuilder");
 import botbuilder_azure = require("botbuilder-azure");
 var restify = require('restify');
 
+import { MemeCaptionService } from './services/memecreator';
+
 var useEmulator = (process.env.NODE_ENV == 'development');
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector(<any>{
@@ -21,7 +23,10 @@ var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', [
     function (session) {
+        var captionService = new MemeCaptionService();
+        var url = captionService.GenerateResultForMemeCreate(61546, "test", "test");
         builder.Prompts.text(session, "Hello... What's your name?");
+        session.send("test message:" + url);
     },
     function (session, results) {
         session.userData.name = results.response;
@@ -32,10 +37,13 @@ bot.dialog('/', [
         builder.Prompts.choice(session, "What language do you code Node using?", ["JavaScript", "CoffeeScript", "TypeScript"]);
     },
     function (session, results) {
+
         session.userData.language = results.response.entity;
         session.send("Got it... " + session.userData.name + 
                     " you've been programming for " + session.userData.coding + 
                     " years and use " + session.userData.language + ".");
+
+
     }
 ]);
 

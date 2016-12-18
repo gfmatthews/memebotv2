@@ -36,5 +36,11 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-#Launch.json has secrets in it
+# Launch.json has secrets in it
 *launch.json
+
+# Typescriptfiles
+*.js
+!_*.js
+!*gulpfile.js
+/messages/js*
