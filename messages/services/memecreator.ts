@@ -1,10 +1,9 @@
 import imgflipperapi = require('imgflipper');
 
 export class MemeCaptionService {
-    username: string;
-    password: string;
-    imgurl: string;
-    imgflipper;
+    private username: string;
+    private password: string;
+    private imgflipper;
 
     constructor()
     {
@@ -14,7 +13,7 @@ export class MemeCaptionService {
     }
 
     /// wrapper for meme creation
-    public async GenerateResultForMemeCreate(memetype: number, toptext: string, bottomtext: string, callback: (return_url)=> void)
+    public GenerateResultForMemeCreate(memetype: number, toptext: string, bottomtext: string, callback: (return_url)=> void)
     {
         this.imgflipper.generateMeme(memetype, toptext, bottomtext, (err, url) => {
           callback(url);

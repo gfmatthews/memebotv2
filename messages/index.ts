@@ -10,6 +10,10 @@ var restify = require('restify');
 
 import { MemeCaptionService } from './services/memecreator';
 
+import { chitchatgreetingdialog } from './dialogs/chitchat';
+import { chitchathelpdialog } from './dialogs/chitchat';
+import { chitchatdimissdialog } from './dialogs/chitchat';
+
 var useEmulator = (process.env.NODE_ENV == 'development');
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector(<any>{
@@ -21,32 +25,41 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 
 var bot = new builder.UniversalBot(connector);
 
-bot.dialog('/', [
-    async function (session) {
-        var captionService = new MemeCaptionService();
-        captionService.GenerateResultForMemeCreate(61546, "test", "test", function(url) {
-            session.send("test message:" + url);
-        });
-        builder.Prompts.text(session, "Hello... What's your name?");
-    },
-    function (session, results) {
-        session.userData.name = results.response;
-        builder.Prompts.number(session, "Hi " + results.response + ", How many years have you been coding?"); 
-    },
-    function (session, results) {
-        session.userData.coding = results.response;
-        builder.Prompts.choice(session, "What language do you code Node using?", ["JavaScript", "CoffeeScript", "TypeScript"]);
-    },
-    function (session, results) {
+// Make sure you add code to validate these fields
+var luisAppId = process.env.LuisAppId;
+var luisAPIKey = process.env.LuisAPIKey;
+var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
 
-        session.userData.language = results.response.entity;
-        session.send("Got it... " + session.userData.name + 
-                    " you've been programming for " + session.userData.coding + 
-                    " years and use " + session.userData.language + ".");
+const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
+
+// Main dialog with LUIS
+var recognizer = new builder.LuisRecognizer(LuisModelUrl);
+var intents = new builder.IntentDialog({ recognizers: [recognizer] })
+/*
+.matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
+*/
+.matches('None', (session, args) => {
+    session.send('Hi! This is the None intent handler. You said: \'%s\'.', session.message.text);
+})
+.matches('chitchat.greeting', (session, args) => {
+    session.beginDialog('/chitchat/greeting');
+})
+.matches('chitchat.help', (session, args) => {
+    session.beginDialog('/chitchat/help');
+})
+.matches('chitchat.dismiss', (session, args) => {
+    session.beginDialog('/chitchat/dismiss');
+})
+.onDefault((session) => {
+    session.send('Sorry, I did not understand \'%s\'.', session.message.text);
+});
+
+bot.dialog('/', intents);    
+bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
+bot.dialog('/chitchat/help', chitchathelpdialog);
+bot.dialog('/chitchat/dismiss', chitchatdimissdialog);
 
 
-    }
-]);
 
 if (useEmulator) {
     var server = restify.createServer();
