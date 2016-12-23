@@ -13,7 +13,9 @@
     "restify": "^4.1.1",
     "typescript": "^2.1.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/es6-shim": "^0.31.32"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

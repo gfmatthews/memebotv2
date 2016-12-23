@@ -3,20 +3,23 @@ import imgflipperapi = require('imgflipper');
 export class MemeCaptionService {
     username: string;
     password: string;
+    imgurl: string;
+    imgflipper;
 
     constructor()
     {
         this.username = "GeorgeMatthews";
         this.password = "aoX8rZfIk27869v";
+        this.imgflipper = new imgflipperapi(this.username, this.password);
     }
 
-    GenerateResultForMemeCreate(memetype: number, toptext: string, bottomtext: string)
+    /// wrapper for meme creation
+    public async GenerateResultForMemeCreate(memetype: number, toptext: string, bottomtext: string, callback: (return_url)=> void)
     {
-        var imgflipper = new imgflipperapi("username", "pass");
-        var imgurl: string;
-        imgflipper.generateMeme(memetype, toptext, bottomtext, function (err, url) {
-            imgurl = url;
+        this.imgflipper.generateMeme(memetype, toptext, bottomtext, (err, url) => {
+          callback(url);
         });
-        return imgurl;
     }
+
+    
 }

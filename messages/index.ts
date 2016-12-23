@@ -22,11 +22,12 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', [
-    function (session) {
+    async function (session) {
         var captionService = new MemeCaptionService();
-        var url = captionService.GenerateResultForMemeCreate(61546, "test", "test");
+        captionService.GenerateResultForMemeCreate(61546, "test", "test", function(url) {
+            session.send("test message:" + url);
+        });
         builder.Prompts.text(session, "Hello... What's your name?");
-        session.send("test message:" + url);
     },
     function (session, results) {
         session.userData.name = results.response;
