@@ -59,7 +59,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
         async function (session, args, next) {
             session.sendTyping();
 
-            session.privateConversationData["memetypeentitty"] = await MemeExtractor.getMemeFromEntityList(args.entities);
+            session.privateConversationData["memetypeentity"] = await MemeExtractor.getMemeFromEntityList(args.entities);
             session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext');
             var toptext = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext');
 
