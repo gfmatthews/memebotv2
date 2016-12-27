@@ -8,16 +8,11 @@ import builder = require("botbuilder");
 import botbuilder_azure = require("botbuilder-azure");
 var restify = require('restify');
 
-import { MemeCaptionService } from './services/memecreator';
-var captionService = new MemeCaptionService();
-
 import { chitchatgreetingdialog } from './dialogs/chitchat';
 import { chitchathelpdialog } from './dialogs/chitchat';
 import { chitchatdimissdialog } from './dialogs/chitchat';
 
-import { MemetypeExtractor } from './services/memetypeextractor';
-import { PopularMemeTypes } from './services/memetypeextractor';
-var MemeExtractor = new MemetypeExtractor();
+import { memecreationdialog } from './dialogs/memecreate';
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -55,58 +50,9 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('chitchat.dismiss', (session, args) => {
         session.beginDialog('/chitchat/dismiss');
     })
-    .matches('meme.create', [
-        async function (session, args, next) {
-            session.sendTyping();
-
-            session.privateConversationData["memetypeentity"] = await MemeExtractor.getMemeFromEntityList(args.entities);
-            session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext');
-            var toptext = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext');
-
-            if (!toptext) {
-                builder.Prompts.text(session, "On the top of the meme?");
-            } else {
-                next({ response: toptext.entity });
-            }
-
-        },
-        // Extract top text entity
-        function (session, results, next) {
-            if (results.response) {
-                session.privateConversationData["toptext"] = results.response;
-            } else {
-                session.send("Ok");
-            }
-
-            // check if user entered a bottom text prediction, if no, prompt for it
-            if (!session.privateConversationData["bottomtextentity"]) {
-                builder.Prompts.text(session, "On the bottom of the meme?");
-            } else {
-                next({ response: session.privateConversationData["bottomtextentity"].entity });
-            }
-        },
-        // Extract bottom text entity
-        function (session, results) {
-            if (results.response) {
-                session.privateConversationData["bottomtext"] = results.response;
-
-                var memetype;
-                if (session.privateConversationData["memetypeentity"] == -1) {
-                    memetype = PopularMemeTypes[Math.floor(Math.random() * Object.keys(PopularMemeTypes).length)];
-                }
-                else {
-                    memetype = session.privateConversationData["memetypeentity"] as number;
-                }
-                captionService.GenerateResultForMemeCreate(memetype, session.privateConversationData["toptext"], session.privateConversationData["bottomtext"], (url) => {
-                    session.send("Meme:" + url);
-                })
-            } else {
-                session.send("Ok");
-            }
-            session.endConversation();
-        }
-
-    ])
+    .matches('meme.create', (session, args) => {
+        session.beginDialog('/memes/create', args);
+    } )
     .onDefault((session) => {
         session.send('Sorry, I did not understand \'%s\'.', session.message.text);
     });
@@ -115,8 +61,7 @@ bot.dialog('/', intents);
 bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
 bot.dialog('/chitchat/help', chitchathelpdialog);
 bot.dialog('/chitchat/dismiss', chitchatdimissdialog);
-
-
+bot.dialog('/memes/create', memecreationdialog);
 
 if (useEmulator) {
     var server = restify.createServer();
