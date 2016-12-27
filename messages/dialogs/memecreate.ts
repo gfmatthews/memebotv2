@@ -73,9 +73,14 @@ export var memecreationdialog =
                     memetype = session.privateConversationData["memetypeentity"] as number;
                 }
                 captionService.GenerateResultForMemeCreate(memetype, session.privateConversationData["toptext"], session.privateConversationData["bottomtext"], (url) => {
-                    var cardCreation = new MemeCardCreationService(session, url);
-                    var msg = new builder.Message(session).addAttachment(cardCreation.createThumbnailCard());
-                    session.send(msg);
+                    if (url) {
+                        var cardCreation = new MemeCardCreationService(session, url);
+                        var msg = new builder.Message(session).addAttachment(cardCreation.createThumbnailCard());
+                        session.send(msg);
+                    }
+                    else {
+                        session.send("Ugh, I'm having a rough day working with all these memes today.  Give me a bit maybe and try again later?  Sorry about that.");
+                    }
                 })
             } else {
                 session.send("Ok");
