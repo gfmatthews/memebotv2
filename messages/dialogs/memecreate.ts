@@ -6,10 +6,11 @@ import { PopularMemeTypes } from '../services/memetypeextractor';
 var MemeExtractor = new MemetypeExtractor();
 
 import { MemeCaptionService } from '../services/memecreator';
+import { MemeCardCreationService } from '../services/memecardcreator';
 var captionService = new MemeCaptionService();
 
-export var memecreationdialog = 
-[
+export var memecreationdialog =
+    [
         async function (session, args, next) {
             session.sendTyping();
 
@@ -19,8 +20,7 @@ export var memecreationdialog =
             var alternatetextsuggestion;
 
             // 
-            if (!toptext && !session.privateConversationData["bottomtextentity"])
-            {
+            if (!toptext && !session.privateConversationData["bottomtextentity"]) {
                 session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text');
                 alternatetextsuggestion = "";
             }
@@ -35,7 +35,13 @@ export var memecreationdialog =
         // Extract top text entity
         function (session, results, next) {
             if (results.response) {
-                session.privateConversationData["toptext"] = results.response;
+                if (results.response == 'c') {
+                    // we tell the user that typing 'c' will skip captioning this part
+                    session.privateConversationData["toptext"] = "";
+                }
+                else {
+                    session.privateConversationData["toptext"] = results.response;
+                }
             } else {
                 session.send("Ok");
             }
@@ -49,8 +55,15 @@ export var memecreationdialog =
         },
         // Extract bottom text entity
         function (session, results) {
+            session.sendTyping();
             if (results.response) {
-                session.privateConversationData["bottomtext"] = results.response;
+                if (results.response == 'c') {
+                    // we tell the user that typing 'c' will skip captioning this part
+                    session.privateConversationData["bottomtext"] = "";
+                }
+                else {
+                    session.privateConversationData["bottomtext"] = results.response;
+                }
 
                 var memetype;
                 if (session.privateConversationData["memetypeentity"] == -1) {
@@ -60,7 +73,9 @@ export var memecreationdialog =
                     memetype = session.privateConversationData["memetypeentity"] as number;
                 }
                 captionService.GenerateResultForMemeCreate(memetype, session.privateConversationData["toptext"], session.privateConversationData["bottomtext"], (url) => {
-                    session.send("Meme:" + url);
+                    var cardCreation = new MemeCardCreationService(session, url);
+                    var msg = new builder.Message(session).addAttachment(cardCreation.createThumbnailCard());
+                    session.send(msg);
                 })
             } else {
                 session.send("Ok");
@@ -68,4 +83,4 @@ export var memecreationdialog =
             session.endConversation();
         }
 
-];
+    ];
