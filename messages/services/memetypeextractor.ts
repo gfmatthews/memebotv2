@@ -21,7 +21,11 @@ export class MemetypeExtractor {
             return test;
         }
         else {
-            return -1;
+            // we didn't find anything declared in the entity list so we're going to give back something random
+            // WHO KNOWS WHAT WE'LL MAKE
+            var randomKey = this.keys[Math.floor(Math.random() * this.keys.length)];
+            let test = this.dict[randomKey] as number;
+            return test;
         }
     }
 
@@ -57,7 +61,7 @@ export class MemetypeExtractor {
         this.dict["meme.creation2.type::its_gone"] = PopularMemeTypes.ItsGone;
         this.dict["meme.creation3.type::confession_bear"] = PopularMemeTypes.ConfessionBear;
         this.dict["meme.creation3.type::socially_awkward_awesome"] = PopularMemeTypes.SociallyAwkwardAwesomePenguin;
-        // yes i know its mispelled
+        // yes i know its mispelled, but its also mispelled in my LUIS model and that's way too much work to re-train and spell right.
         this.dict["meme.creation3.type::philosopraptor"] = PopularMemeTypes.Philosoraptor;
         this.dict["meme.creation3.type::clarity_clarence"] = PopularMemeTypes.ClarityClarence;
         this.dict["meme.creation4.type::all_the_things"] = PopularMemeTypes.AllTheThings;

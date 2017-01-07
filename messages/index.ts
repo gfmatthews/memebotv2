@@ -8,11 +8,16 @@ import builder = require("botbuilder");
 import botbuilder_azure = require("botbuilder-azure");
 var restify = require('restify');
 
+// Configure appInsights
+import appInsights = require("applicationinsights");
+appInsights.setup(process.env['BotDevAppInsightKey']).start();
+
 import { chitchatgreetingdialog } from './dialogs/chitchat';
 import { chitchathelpdialog } from './dialogs/chitchat';
 import { chitchatdimissdialog } from './dialogs/chitchat';
 
 import { memecreationdialog } from './dialogs/memecreate';
+var insightsKey = process.env['BotDevAppInsightKey'];
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -22,6 +27,8 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
     stateEndpoint: process.env['BotStateEndpoint'],
     openIdMetadata: process.env['BotOpenIdMetadata']
 });
+
+
 
 var bot = new builder.UniversalBot(connector);
 
