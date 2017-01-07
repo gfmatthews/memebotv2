@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "applicationinsights": "^0.17.1",
     "botbuilder": "^3.4.2",
     "botbuilder-azure": "0.0.1",
     "gulp": "^3.9.1",

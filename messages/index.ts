@@ -45,13 +45,16 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     /*
     .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
     */
+    .matches('/^hi', (session, args) => {
+        session.beginDialog('/chitchat/greeting');
+    })
     .matches('None', (session, args) => {
         session.send('Hi! This is the None intent handler. You said: \'%s\'.', session.message.text);
     })
     .matches('chitchat.greeting', (session, args) => {
         session.beginDialog('/chitchat/greeting');
     })
-    .matches('chitchat.help', (session, args) => {
+    .matches('chitchat.help', '/hello', (session, args) => {
         session.beginDialog('/chitchat/help');
     })
     .matches('chitchat.dismiss', (session, args) => {
