@@ -13,19 +13,28 @@ var captionService = new MemeCaptionService();
 
 export var memecreationdialog =
     [
-        async function (session, args, next) {
+        function (session, args, next) {
             session.sendTyping();
+            var toptext;
+            var alternatetextsuggestion;
 
+            // coming from a reg ex intent that we know about
             if (args.directmemetype) {
                 session.privateConversationData["memetypeentity"] = args.directmemetype;
                 session.privateConversationData["bottomtextentity"] = args.bottomtext;
                 toptext = args.toptext;
             }
             else {
-                session.privateConversationData["memetypeentity"] = await MemeExtractor.getMemeFromEntityList(args.entities);
-                session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext').entity;
-                var toptext = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext').entity;
-                var alternatetextsuggestion;
+                // We came from a LUIS intent
+                if (args.entities) {
+                    session.privateConversationData["memetypeentity"] = MemeExtractor.getMemeFromEntityList(args.entities);
+                    session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext').entity;
+                    toptext = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext').entity;
+                }
+                // We came from a regex intent
+                else {
+                    session.privateConversationData["memetypeentity"] = MemeExtractor.getRandomMemeType();
+                }
             }
 
             // 

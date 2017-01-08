@@ -2,7 +2,7 @@ import builder = require("botbuilder");
 import botbuilder_azure = require("botbuilder-azure");
 
 export class MemetypeExtractor {
-    async getMemeFromEntityList(entitylist): Promise<number> {
+    getMemeFromEntityList(entitylist): number {
         var memetype;
 
         // is this how every works?
@@ -23,13 +23,17 @@ export class MemetypeExtractor {
         else {
             // we didn't find anything declared in the entity list so we're going to give back something random
             // WHO KNOWS WHAT WE'LL MAKE
-            var randomKey = this.keys[Math.floor(Math.random() * this.keys.length)];
-            let test = this.dict[<any>randomKey] as number;
-            return test;
+            return this.getRandomMemeType();
         }
     }
 
-    getTextElementArrayFromRegExMeme(session: any, parser: RegExp): Array<string> {     
+    getRandomMemeType(): number {
+        var randomKey = this.keys[Math.floor(Math.random() * this.keys.length)];
+        let test = this.dict[<any>randomKey] as number;
+        return test;
+    }
+
+    getTextElementArrayFromRegExMeme(session: any, parser: RegExp): Array<string> {
         var textElements = parser.exec(session.message.text);
         return textElements;
     }
