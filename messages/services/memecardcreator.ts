@@ -30,9 +30,9 @@ export class MemeCardCreationService {
 
     public createThumbnailCard() {
         return new builder.ThumbnailCard(this.session)
-            .title('Meme')
+            .title(this.CreatedMemeResponses[Math.floor(Math.random() * this.CreatedMemeResponses.length)])
             .subtitle(this.imgurl)
-            .text(this.CreatedMemeResponses[Math.floor(Math.random() * this.CreatedMemeResponses.length)])
+            .text("")
             .images(this.getCardImages())
             .buttons(this.getCardActions());
     }

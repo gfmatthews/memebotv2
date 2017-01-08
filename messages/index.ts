@@ -17,6 +17,10 @@ import { chitchathelpdialog } from './dialogs/chitchat';
 import { chitchatdimissdialog } from './dialogs/chitchat';
 
 import { memecreationdialog } from './dialogs/memecreate';
+import { PopularMemeTypes } from './services/memetypeextractor';
+import { MemetypeExtractor } from './services/memetypeextractor';
+var MemeExtractor = new MemetypeExtractor();
+
 var insightsKey = process.env['BotDevAppInsightKey'];
 
 var useEmulator = (process.env.NODE_ENV == 'development');
@@ -28,6 +32,15 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
     openIdMetadata: process.env['BotOpenIdMetadata']
 });
 
+var MemeRegExList = new Map;
+MemeRegExList[PopularMemeTypes.DosEquisGuy] = new RegExp('(i don\'?t always .*) (but when i do,? .*)');
+MemeRegExList[PopularMemeTypes.OneDoesNotSimply] = new RegExp('(one does not simply) (.*)');
+MemeRegExList[PopularMemeTypes.XEverywhere] = new RegExp('(.*),? (\\1 everywhere)');
+MemeRegExList[PopularMemeTypes.NedStarkBrace] = new RegExp('(brace yoursel[^\s]+) (.*)');
+MemeRegExList[PopularMemeTypes.AllTheThings] = new RegExp('(.*) (all the .*)');
+MemeRegExList[PopularMemeTypes.ThatWouldBeGreat] = new RegExp('(.*) (that would be great|that\'?d be great)');
+MemeRegExList[PopularMemeTypes.WhatIfIToldYou] = new RegExp('(what if i told you) (.*)');
+MemeRegExList[PopularMemeTypes.Trump] = new RegExp('(we\'re going to.*) (and.*)');
 
 
 var bot = new builder.UniversalBot(connector);
@@ -41,15 +54,62 @@ const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' +
 
 // Main dialog with LUIS
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
-var intents = new builder.IntentDialog({ recognizers: [recognizer] })
+var recognizerSet = [
+    new builder.RegExpRecognizer('chitchat.greeting', new RegExp("(?:.+-)?\bhi\b(?:-.+)?$")),
+    new builder.RegExpRecognizer('chitchat.greeting', new RegExp('(?:.+-)?\bhello\b(?:-.+)?$')),
+    new builder.RegExpRecognizer('meme.create.dosequis', MemeRegExList[PopularMemeTypes.DosEquisGuy]),
+    new builder.RegExpRecognizer('meme.create.onedoesnotsimply', MemeRegExList[PopularMemeTypes.OneDoesNotSimply]),
+    new builder.RegExpRecognizer('meme.create.xeverywhere', MemeRegExList[PopularMemeTypes.XEverywhere]),
+    new builder.RegExpRecognizer('meme.create.nedstark', MemeRegExList[PopularMemeTypes.NedStarkBrace]),
+    new builder.RegExpRecognizer('meme.create.allthethings', MemeRegExList[PopularMemeTypes.AllTheThings]),
+    new builder.RegExpRecognizer('meme.create.thatwouldbegreat', MemeRegExList[PopularMemeTypes.ThatWouldBeGreat]),
+    new builder.RegExpRecognizer('meme.create.whatifitoldyou', MemeRegExList[PopularMemeTypes.WhatIfIToldYou]),
+    new builder.RegExpRecognizer('meme.create.trump', MemeRegExList[PopularMemeTypes.Trump]),
+    recognizer];
+
+var intents = new builder.IntentDialog({ recognizers: recognizerSet, recognizeOrder: builder.RecognizeOrder.series })
     /*
     .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
     */
-    .matches('/^hi', (session, args) => {
-        session.beginDialog('/chitchat/greeting');
+    .matches('meme.create.dosequis', (session, args) => {
+        appInsights.getClient().trackEvent("MemeCreated-REGEX");
+        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[PopularMemeTypes.DosEquisGuy]);
+        session.beginDialog('/memes/create', { directmemetype: PopularMemeTypes.DosEquisGuy as number, toptext: textElements[1], bottomtext: textElements[2] });
     })
-    .matches('None', (session, args) => {
-        session.send('Hi! This is the None intent handler. You said: \'%s\'.', session.message.text);
+    .matches('meme.create.onedoesnotsimply', (session, args) => {
+        appInsights.getClient().trackEvent("MemeCreated-REGEX");
+        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[PopularMemeTypes.OneDoesNotSimply]);
+        session.beginDialog('/memes/create', { directmemetype: PopularMemeTypes.OneDoesNotSimply as number, toptext: textElements[1], bottomtext: textElements[2] });
+    })
+    .matches('meme.create.xeverywhere', (session, args) => {
+        appInsights.getClient().trackEvent("MemeCreated-REGEX");
+        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[PopularMemeTypes.XEverywhere]);
+        session.beginDialog('/memes/create', { directmemetype: PopularMemeTypes.XEverywhere as number, toptext: textElements[1], bottomtext: textElements[2] });
+    })
+    .matches('meme.create.nedstark', (session, args) => {
+        appInsights.getClient().trackEvent("MemeCreated-REGEX");
+        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[PopularMemeTypes.NedStarkBrace]);
+        session.beginDialog('/memes/create', { directmemetype: PopularMemeTypes.NedStarkBrace as number, toptext: textElements[1], bottomtext: textElements[2] });
+    })
+    .matches('meme.create.allthethings', (session, args) => {
+        appInsights.getClient().trackEvent("MemeCreated-REGEX");
+        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[PopularMemeTypes.AllTheThings]);
+        session.beginDialog('/memes/create', { directmemetype: PopularMemeTypes.AllTheThings as number, toptext: textElements[1], bottomtext: textElements[2] });
+    })
+    .matches('meme.create.thatwouldbegreat', (session, args) => {
+        appInsights.getClient().trackEvent("MemeCreated-REGEX");
+        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[PopularMemeTypes.ThatWouldBeGreat]);
+        session.beginDialog('/memes/create', { directmemetype: PopularMemeTypes.ThatWouldBeGreat as number, toptext: textElements[1], bottomtext: textElements[2] });
+    })
+    .matches('meme.create.whatifitoldyou', (session, args) => {
+        appInsights.getClient().trackEvent("MemeCreated-REGEX");
+        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[PopularMemeTypes.WhatIfIToldYou]);
+        session.beginDialog('/memes/create', { directmemetype: PopularMemeTypes.WhatIfIToldYou as number, toptext: textElements[1], bottomtext: textElements[2] });
+    })
+    .matches('meme.create.trump', (session, args) => {
+        appInsights.getClient().trackEvent("MemeCreated-REGEX");
+        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[PopularMemeTypes.Trump]);
+        session.beginDialog('/memes/create', { directmemetype: PopularMemeTypes.Trump as number, toptext: textElements[1], bottomtext: textElements[2] });
     })
     .matches('chitchat.greeting', (session, args) => {
         session.beginDialog('/chitchat/greeting');
@@ -62,10 +122,11 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     })
     .matches('meme.create', (session, args) => {
         session.beginDialog('/memes/create', args);
-    } )
+    })
     .onDefault((session) => {
         session.send('Sorry, I did not understand \'%s\'.', session.message.text);
     });
+
 
 bot.dialog('/', intents);
 bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
@@ -82,3 +143,4 @@ if (useEmulator) {
 } else {
     module.exports = { default: connector.listen() }
 }
+

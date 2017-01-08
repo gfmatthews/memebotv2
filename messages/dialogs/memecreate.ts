@@ -16,10 +16,17 @@ export var memecreationdialog =
         async function (session, args, next) {
             session.sendTyping();
 
-            session.privateConversationData["memetypeentity"] = await MemeExtractor.getMemeFromEntityList(args.entities);
-            session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext');
-            var toptext = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext');
-            var alternatetextsuggestion;
+            if (args.directmemetype) {
+                session.privateConversationData["memetypeentity"] = args.directmemetype;
+                session.privateConversationData["bottomtextentity"] = args.bottomtext;
+                toptext = args.toptext;
+            }
+            else {
+                session.privateConversationData["memetypeentity"] = await MemeExtractor.getMemeFromEntityList(args.entities);
+                session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext').entity;
+                var toptext = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext').entity;
+                var alternatetextsuggestion;
+            }
 
             // 
             if (!toptext && !session.privateConversationData["bottomtextentity"]) {
@@ -30,7 +37,7 @@ export var memecreationdialog =
             if (!toptext && !alternatetextsuggestion) {
                 builder.Prompts.text(session, "On the top of the meme?  Say SKIP to skip this part.");
             } else {
-                next({ response: toptext.entity });
+                next({ response: toptext });
             }
 
         },
@@ -52,7 +59,7 @@ export var memecreationdialog =
             if (!session.privateConversationData["bottomtextentity"]) {
                 builder.Prompts.text(session, "On the bottom of the meme? BTW, you can respond with the word SKIP to ignore this section");
             } else {
-                next({ response: session.privateConversationData["bottomtextentity"].entity });
+                next({ response: session.privateConversationData["bottomtextentity"] });
             }
         },
         // Extract bottom text entity

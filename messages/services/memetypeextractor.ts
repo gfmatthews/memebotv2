@@ -24,10 +24,17 @@ export class MemetypeExtractor {
             // we didn't find anything declared in the entity list so we're going to give back something random
             // WHO KNOWS WHAT WE'LL MAKE
             var randomKey = this.keys[Math.floor(Math.random() * this.keys.length)];
-            let test = this.dict[randomKey] as number;
+            let test = this.dict[<any>randomKey] as number;
             return test;
         }
     }
+
+    getTextElementArrayFromRegExMeme(session: any, parser: RegExp): Array<string> {     
+        var textElements = parser.exec(session.message.text);
+        return textElements;
+    }
+
+
 
     // this object represents a shitty performing dictionary ish thing
     // is there a fastesr way to do this?  yes, there is.
