@@ -125,7 +125,9 @@ var intents = new builder.IntentDialog({ recognizers: recognizerSet,
         session.beginDialog('/memes/create', args);
     })
     .onDefault((session) => {
-        session.send('Sorry, I did not understand \'%s\'.', session.message.text);
+        appInsights.getClient().trackEvent("Intent Failure", {message: session.message.text});
+        session.send("Not quite sure what you meant there...");
+        session.beginDialog('/chitchat/help');
     });
 
 
