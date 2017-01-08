@@ -56,6 +56,7 @@ var LUISRecognizer = new builder.LuisRecognizer(LuisModelUrl);
 var recognizerSet = [
     new builder.RegExpRecognizer('chitchat.greeting', new RegExp("^hi*")),
     new builder.RegExpRecognizer('chitchat.greeting', new RegExp('^hello*')),
+    new builder.RegExpRecognizer('meme.create', new RegExp('(make .*) (meme.*))')),
     new builder.RegExpRecognizer('meme.create.dosequis', MemeRegExList[PopularMemeTypes.DosEquisGuy]),
     new builder.RegExpRecognizer('meme.create.onedoesnotsimply', MemeRegExList[PopularMemeTypes.OneDoesNotSimply]),
     new builder.RegExpRecognizer('meme.create.xeverywhere', MemeRegExList[PopularMemeTypes.XEverywhere]),
