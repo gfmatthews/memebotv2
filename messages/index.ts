@@ -42,7 +42,6 @@ MemeRegExList[PopularMemeTypes.ThatWouldBeGreat] = new RegExp('(.*) (that would 
 MemeRegExList[PopularMemeTypes.WhatIfIToldYou] = new RegExp('(what if i told you) (.*)');
 MemeRegExList[PopularMemeTypes.Trump] = new RegExp('(we\'re going to.*) (and.*)');
 
-
 var bot = new builder.UniversalBot(connector);
 
 // Make sure you add code to validate these fields
@@ -114,7 +113,7 @@ var intents = new builder.IntentDialog({ recognizers: recognizerSet, recognizeOr
     .matches('chitchat.greeting', (session, args) => {
         session.beginDialog('/chitchat/greeting');
     })
-    .matches('chitchat.help', '/hello', (session, args) => {
+    .matches('chitchat.help', (session, args) => {
         session.beginDialog('/chitchat/help');
     })
     .matches('chitchat.dismiss', (session, args) => {
