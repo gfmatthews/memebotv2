@@ -52,10 +52,10 @@ var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
 const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
 
 // Main dialog with LUIS
-var recognizer = new builder.LuisRecognizer(LuisModelUrl);
+var LUISRecognizer = new builder.LuisRecognizer(LuisModelUrl);
 var recognizerSet = [
-    new builder.RegExpRecognizer('chitchat.greeting', new RegExp("(?:.+-)?\bhi\b(?:-.+)?$")),
-    new builder.RegExpRecognizer('chitchat.greeting', new RegExp('(?:.+-)?\bhello\b(?:-.+)?$')),
+    new builder.RegExpRecognizer('chitchat.greeting', new RegExp("^hi*")),
+    new builder.RegExpRecognizer('chitchat.greeting', new RegExp('^hello*')),
     new builder.RegExpRecognizer('meme.create.dosequis', MemeRegExList[PopularMemeTypes.DosEquisGuy]),
     new builder.RegExpRecognizer('meme.create.onedoesnotsimply', MemeRegExList[PopularMemeTypes.OneDoesNotSimply]),
     new builder.RegExpRecognizer('meme.create.xeverywhere', MemeRegExList[PopularMemeTypes.XEverywhere]),
@@ -64,9 +64,11 @@ var recognizerSet = [
     new builder.RegExpRecognizer('meme.create.thatwouldbegreat', MemeRegExList[PopularMemeTypes.ThatWouldBeGreat]),
     new builder.RegExpRecognizer('meme.create.whatifitoldyou', MemeRegExList[PopularMemeTypes.WhatIfIToldYou]),
     new builder.RegExpRecognizer('meme.create.trump', MemeRegExList[PopularMemeTypes.Trump]),
-    recognizer];
+    LUISRecognizer];
 
-var intents = new builder.IntentDialog({ recognizers: recognizerSet, recognizeOrder: builder.RecognizeOrder.series })
+var intents = new builder.IntentDialog({ recognizers: recognizerSet, 
+    recognizeOrder: builder.RecognizeOrder.series,
+    stopIfExactMatch: true })
     /*
     .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
     */
