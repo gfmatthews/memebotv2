@@ -28,14 +28,23 @@ export var memecreationdialog =
                 // We came from a LUIS intent
                 if (args.entities) {
                     session.privateConversationData["memetypeentity"] = MemeExtractor.getMemeFromEntityList(args.entities);
-                    session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext').entity;
-                    toptext = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext').entity;
-                }
-                // We came from a regex intent
-                else {
-                    session.privateConversationData["memetypeentity"] = MemeExtractor.getRandomMemeType();
+
+                    var bottomtextentity = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext');
+
+                    if (bottomtextentity) {
+                        session.privateConversationData["bottomtextentity"] = bottomtextentity.entity;
+                    }
+
+                    var toptextentity = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext');
+                    if (toptextentity) {
+                        toptext = toptextentity.entity;
+                    }
                 }
             }
+            if (!session.privateConversationData["memetypeentity"]) {
+                session.privateConversationData["memetypeentity"] = MemeExtractor.getRandomMemeType();
+            }
+
 
             // 
             if (!toptext && !session.privateConversationData["bottomtextentity"]) {
