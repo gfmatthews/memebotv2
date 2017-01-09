@@ -44,6 +44,15 @@ MemeRegExList[PopularMemeTypes.Trump] = new RegExp('(we\'re going to.*) (and.*)'
 
 var bot = new builder.UniversalBot(connector);
 
+// Dialog versioning makes sure that users who get caught in bug'ed conversations (e.g. what would previously happen
+// when users interacted with the memecreate dialog) get unstuck when the bugs get resolved.
+var dialogVersionOptions = {
+    version: 2.0,
+    message: 'My apologies but my brain has just been updated. I need to restart our conversation.',
+    resetCommand: /^reset/i
+};
+bot.use(builder.Middleware.dialogVersion(dialogVersionOptions));
+
 // Make sure you add code to validate these fields
 var luisAppId = process.env.LuisAppId;
 var luisAPIKey = process.env.LuisAPIKey;
