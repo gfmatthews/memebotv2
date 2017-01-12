@@ -24,7 +24,6 @@ var MemeExtractor = new MemetypeExtractor();
 
 // Setup Bot Builder and connect to our bot instance 
 var useEmulator = (process.env.NODE_ENV == 'development');
-var bot = new builder.UniversalBot(connector);
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector(<any>{
     appId: process.env['MicrosoftAppId'],
@@ -32,6 +31,9 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
     stateEndpoint: process.env['BotStateEndpoint'],
     openIdMetadata: process.env['BotOpenIdMetadata']
 });
+
+
+var bot = new builder.UniversalBot(connector);
 
 // Dialog versioning makes sure that users who get caught in bug'ed conversations (e.g. what would previously happen
 // when users interacted with the memecreate dialog) get unstuck when the bugs get resolved.
@@ -41,14 +43,6 @@ var dialogVersionOptions = {
     resetCommand: /^reset/i
 };
 bot.use(builder.Middleware.dialogVersion(dialogVersionOptions));
-
-// Dialog Listing
-bot.dialog('/', RegExpRecognizerIntentDialog);
-bot.dialog('/luis', LuisIntentRecognizerDialog);
-bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
-bot.dialog('/chitchat/help', chitchathelpdialog);
-bot.dialog('/chitchat/dismiss', chitchatdimissdialog);
-bot.dialog('/memes/create', memecreationdialog);
 
 // Add in bot emulator support
 if (useEmulator) {
@@ -95,13 +89,15 @@ var recognizerSet = [
 
 // Helper function to pull in the MemeType and redirect the session to the meme creation dialog
 function createMemeRegex(session: any, type: PopularMemeTypes) {
-        appInsights.getClient().trackEvent("MemeCreated-REGEX");
-        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[type]);
-        session.beginDialog('/memes/create', { directmemetype: type as number, toptext: textElements[1], bottomtext: textElements[2] });
+    appInsights.getClient().trackEvent("MemeCreated-REGEX");
+    var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[type]);
+    session.beginDialog('/memes/create', { directmemetype: type as number, toptext: textElements[1], bottomtext: textElements[2] });
 }
 
-var RegExpRecognizerIntentDialog = new builder.IntentDialog({ recognizers: recognizerSet, 
-    recognizeOrder: builder.RecognizeOrder.parallel, })
+var RegExpRecognizerIntentDialog = new builder.IntentDialog({
+    recognizers: recognizerSet,
+    recognizeOrder: builder.RecognizeOrder.parallel,
+})
     /*
     .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
     */
@@ -142,10 +138,11 @@ var RegExpRecognizerIntentDialog = new builder.IntentDialog({ recognizers: recog
         session.beginDialog('/memes/create', args);
     })
     .onDefault((session) => {
+        appInsights.getClient().trackEvent("RegExp Failure", { message: session.message.text });
         session.beginDialog('/luis');
     });
 
-// LUIS INTENT RECOGNIZER DIALOG (DIALOG AT /LUIS)
+// -- LUIS INTENT RECOGNIZER DIALOG (DIALOG AT /LUIS)
 // Make sure you add code to validate these fields
 var luisAppId = process.env.LuisAppId;
 var luisAPIKey = process.env.LuisAPIKey;
@@ -156,11 +153,17 @@ const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' +
 // Main dialog with LUIS
 var LUISRecognizer = new builder.LuisRecognizer(LuisModelUrl);
 
-var LuisIntentRecognizerDialog = new builder.IntentDialog({ recognizers: [LUISRecognizer], 
-    recognizeOrder: builder.RecognizeOrder.parallel, })
+var LuisIntentRecognizerDialog = new builder.IntentDialog({
+    recognizers: [LUISRecognizer],
+    recognizeOrder: builder.RecognizeOrder.parallel,
+})
     /*
     .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
     */
+    .onBegin((function (session, args, next) {
+        // this replays the session message text to the recognizer
+        session.routeToActiveDialog();
+    }))
     .matches('chitchat.greeting', (session, args) => {
         session.beginDialog('/chitchat/greeting');
     })
@@ -174,8 +177,18 @@ var LuisIntentRecognizerDialog = new builder.IntentDialog({ recognizers: [LUISRe
         session.beginDialog('/memes/create', args);
     })
     .onDefault((session) => {
-        session.beginDialog('/luis');
+        appInsights.getClient().trackEvent("Intent Failure", { message: session.message.text });
+        session.send("Not quite sure what you meant there...");
+        session.beginDialog('/chitchat/help');
     });
+
+// Dialog Listing
+bot.dialog('/', RegExpRecognizerIntentDialog);
+bot.dialog('/luis', LuisIntentRecognizerDialog);
+bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
+bot.dialog('/chitchat/help', chitchathelpdialog);
+bot.dialog('/chitchat/dismiss', chitchatdimissdialog);
+bot.dialog('/memes/create', memecreationdialog);
 
 
 
