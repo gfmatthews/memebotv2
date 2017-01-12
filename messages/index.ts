@@ -1,17 +1,11 @@
-/*-----------------------------------------------------------------------------
-This template demonstrates how to use Waterfalls to collect input from a user using a sequence of steps.
-For a complete walkthrough of creating this type of bot see the article at
-https://docs.botframework.com/en-us/node/builder/chat/dialogs/#waterfall
------------------------------------------------------------------------------*/
 "use strict";
+// -- IMPORTS FROM EXTERNAL MODULES
 import builder = require("botbuilder");
 import botbuilder_azure = require("botbuilder-azure");
 var restify = require('restify');
-
-// Configure appInsights
 import appInsights = require("applicationinsights");
-appInsights.setup(process.env['BotDevAppInsightKey']).start();
 
+// -- IMPORTS FROM INTERNAL MODULES
 import { chitchatgreetingdialog } from './dialogs/chitchat';
 import { chitchathelpdialog } from './dialogs/chitchat';
 import { chitchatdimissdialog } from './dialogs/chitchat';
@@ -19,11 +13,18 @@ import { chitchatdimissdialog } from './dialogs/chitchat';
 import { memecreationdialog } from './dialogs/memecreate';
 import { PopularMemeTypes } from './services/memetypeextractor';
 import { MemetypeExtractor } from './services/memetypeextractor';
-var MemeExtractor = new MemetypeExtractor();
 
+// -- RUNTIME SYSTEM SETUP WORK
+// Configure Application Insights
+appInsights.setup(process.env['BotDevAppInsightKey']).start();
 var insightsKey = process.env['BotDevAppInsightKey'];
 
+// Instantiate Meme Extractor Object
+var MemeExtractor = new MemetypeExtractor();
+
+// Setup Bot Builder and connect to our bot instance 
 var useEmulator = (process.env.NODE_ENV == 'development');
+var bot = new builder.UniversalBot(connector);
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector(<any>{
     appId: process.env['MicrosoftAppId'],
@@ -31,18 +32,6 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
     stateEndpoint: process.env['BotStateEndpoint'],
     openIdMetadata: process.env['BotOpenIdMetadata']
 });
-
-var MemeRegExList = new Map;
-MemeRegExList[PopularMemeTypes.DosEquisGuy] = new RegExp('(i don\'?t always .*) (but when i do,? .*)');
-MemeRegExList[PopularMemeTypes.OneDoesNotSimply] = new RegExp('(one does not simply) (.*)');
-MemeRegExList[PopularMemeTypes.XEverywhere] = new RegExp('(.*),? (\\1 everywhere)');
-MemeRegExList[PopularMemeTypes.NedStarkBrace] = new RegExp('(brace yoursel[^\s]+) (.*)');
-MemeRegExList[PopularMemeTypes.AllTheThings] = new RegExp('(.*) (all the .*)');
-MemeRegExList[PopularMemeTypes.ThatWouldBeGreat] = new RegExp('(.*) (that would be great|that\'?d be great)');
-MemeRegExList[PopularMemeTypes.WhatIfIToldYou] = new RegExp('(what if i told you) (.*)');
-MemeRegExList[PopularMemeTypes.Trump] = new RegExp('(we\'re going to.*) (and.*)');
-
-var bot = new builder.UniversalBot(connector);
 
 // Dialog versioning makes sure that users who get caught in bug'ed conversations (e.g. what would previously happen
 // when users interacted with the memecreate dialog) get unstuck when the bugs get resolved.
@@ -53,15 +42,43 @@ var dialogVersionOptions = {
 };
 bot.use(builder.Middleware.dialogVersion(dialogVersionOptions));
 
-// Make sure you add code to validate these fields
-var luisAppId = process.env.LuisAppId;
-var luisAPIKey = process.env.LuisAPIKey;
-var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
+// Dialog Listing
+bot.dialog('/', RegExpRecognizerIntentDialog);
+bot.dialog('/luis', LuisIntentRecognizerDialog);
+bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
+bot.dialog('/chitchat/help', chitchathelpdialog);
+bot.dialog('/chitchat/dismiss', chitchatdimissdialog);
+bot.dialog('/memes/create', memecreationdialog);
 
-const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
+// Add in bot emulator support
+if (useEmulator) {
+    var server = restify.createServer();
+    server.listen(3978, function () {
+        console.log('test bot endpont at http://localhost:3978/api/messages');
+    });
+    server.post('/api/messages', connector.listen());
+} else {
+    module.exports = { default: connector.listen() }
+}
 
-// Main dialog with LUIS
-var LUISRecognizer = new builder.LuisRecognizer(LuisModelUrl);
+// -- ROOT DIALOG SETUP
+// This uses a two-pass dialog system.  Why?  Well, even though the docs for bot builder
+// claim that local RegEx intents will get evaluated first, that doesn't appear to match the behavior.
+// So, pass #1 ("the root dialog at /") will use the RegExpRecognizer object.  If pass #1 doesn't 
+// find anything and ends up in the none intent handler, it will get passed to the LUIS recognizer 
+// ("the dialog at /luis")
+
+// -- REGEXP DIALOG (ROOT DIALOG at /)
+var MemeRegExList = new Map;
+MemeRegExList[PopularMemeTypes.DosEquisGuy] = new RegExp('(i don\'?t always .*) (but when i do,? .*)');
+MemeRegExList[PopularMemeTypes.OneDoesNotSimply] = new RegExp('(one does not simply) (.*)');
+MemeRegExList[PopularMemeTypes.XEverywhere] = new RegExp('(.*),? (\\1 everywhere)');
+MemeRegExList[PopularMemeTypes.NedStarkBrace] = new RegExp('(brace yoursel[^\s]+) (.*)');
+MemeRegExList[PopularMemeTypes.AllTheThings] = new RegExp('(.*) (all the .*)');
+MemeRegExList[PopularMemeTypes.ThatWouldBeGreat] = new RegExp('(.*) (that would be great|that\'?d be great)');
+MemeRegExList[PopularMemeTypes.WhatIfIToldYou] = new RegExp('(what if i told you) (.*)');
+MemeRegExList[PopularMemeTypes.Trump] = new RegExp('(we\'re going to.*) (and.*)');
+
 var recognizerSet = [
     new builder.RegExpRecognizer('chitchat.greeting', new RegExp("^hi*")),
     new builder.RegExpRecognizer('chitchat.greeting', new RegExp('^hello*')),
@@ -74,10 +91,17 @@ var recognizerSet = [
     new builder.RegExpRecognizer('meme.create.thatwouldbegreat', MemeRegExList[PopularMemeTypes.ThatWouldBeGreat]),
     new builder.RegExpRecognizer('meme.create.whatifitoldyou', MemeRegExList[PopularMemeTypes.WhatIfIToldYou]),
     new builder.RegExpRecognizer('meme.create.trump', MemeRegExList[PopularMemeTypes.Trump]),
-    LUISRecognizer];
+];
 
-var intents = new builder.IntentDialog({ recognizers: recognizerSet, 
-    recognizeOrder: builder.RecognizeOrder.series, })
+// Helper function to pull in the MemeType and redirect the session to the meme creation dialog
+function createMemeRegex(session: any, type: PopularMemeTypes) {
+        appInsights.getClient().trackEvent("MemeCreated-REGEX");
+        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[type]);
+        session.beginDialog('/memes/create', { directmemetype: type as number, toptext: textElements[1], bottomtext: textElements[2] });
+}
+
+var RegExpRecognizerIntentDialog = new builder.IntentDialog({ recognizers: recognizerSet, 
+    recognizeOrder: builder.RecognizeOrder.parallel, })
     /*
     .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
     */
@@ -118,31 +142,40 @@ var intents = new builder.IntentDialog({ recognizers: recognizerSet,
         session.beginDialog('/memes/create', args);
     })
     .onDefault((session) => {
-        appInsights.getClient().trackEvent("Intent Failure", {message: session.message.text});
-        session.send("Not quite sure what you meant there...");
+        session.beginDialog('/luis');
+    });
+
+// LUIS INTENT RECOGNIZER DIALOG (DIALOG AT /LUIS)
+// Make sure you add code to validate these fields
+var luisAppId = process.env.LuisAppId;
+var luisAPIKey = process.env.LuisAPIKey;
+var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
+
+const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
+
+// Main dialog with LUIS
+var LUISRecognizer = new builder.LuisRecognizer(LuisModelUrl);
+
+var LuisIntentRecognizerDialog = new builder.IntentDialog({ recognizers: [LUISRecognizer], 
+    recognizeOrder: builder.RecognizeOrder.parallel, })
+    /*
+    .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
+    */
+    .matches('chitchat.greeting', (session, args) => {
+        session.beginDialog('/chitchat/greeting');
+    })
+    .matches('chitchat.help', (session, args) => {
         session.beginDialog('/chitchat/help');
+    })
+    .matches('chitchat.dismiss', (session, args) => {
+        session.beginDialog('/chitchat/dismiss');
+    })
+    .matches('meme.create', (session, args) => {
+        session.beginDialog('/memes/create', args);
+    })
+    .onDefault((session) => {
+        session.beginDialog('/luis');
     });
 
 
-bot.dialog('/', intents);
-bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
-bot.dialog('/chitchat/help', chitchathelpdialog);
-bot.dialog('/chitchat/dismiss', chitchatdimissdialog);
-bot.dialog('/memes/create', memecreationdialog);
-
-if (useEmulator) {
-    var server = restify.createServer();
-    server.listen(3978, function () {
-        console.log('test bot endpont at http://localhost:3978/api/messages');
-    });
-    server.post('/api/messages', connector.listen());
-} else {
-    module.exports = { default: connector.listen() }
-}
-
-function createMemeRegex(session: any, type: PopularMemeTypes) {
-        appInsights.getClient().trackEvent("MemeCreated-REGEX");
-        var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[type]);
-        session.beginDialog('/memes/create', { directmemetype: type as number, toptext: textElements[1], bottomtext: textElements[2] });
-}
 
