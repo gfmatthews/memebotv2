@@ -56,13 +56,8 @@ if (useEmulator) {
 }
 
 // -- ROOT DIALOG SETUP
-// This uses a two-pass dialog system.  Why?  Well, even though the docs for bot builder
-// claim that local RegEx intents will get evaluated first, that doesn't appear to match the behavior.
-// So, pass #1 ("the root dialog at /") will use the RegExpRecognizer object.  If pass #1 doesn't 
-// find anything and ends up in the none intent handler, it will get passed to the LUIS recognizer 
-// ("the dialog at /luis")
 
-// -- REGEXP DIALOG (ROOT DIALOG at /)
+// -- REGEXP SETUP
 var MemeRegExList = new Map;
 MemeRegExList[PopularMemeTypes.DosEquisGuy] = new RegExp('(i don\'?t always .*) (but when i do,? .*)');
 MemeRegExList[PopularMemeTypes.OneDoesNotSimply] = new RegExp('(one does not simply) (.*)');
@@ -72,6 +67,16 @@ MemeRegExList[PopularMemeTypes.AllTheThings] = new RegExp('(.*) (all the .*)');
 MemeRegExList[PopularMemeTypes.ThatWouldBeGreat] = new RegExp('(.*) (that would be great|that\'?d be great)');
 MemeRegExList[PopularMemeTypes.WhatIfIToldYou] = new RegExp('(what if i told you) (.*)');
 MemeRegExList[PopularMemeTypes.Trump] = new RegExp('(we\'re going to.*) (and.*)');
+
+// LUIS INTENT RECOGNIZER SETUP
+var luisAppId = process.env.LuisAppId;
+var luisAPIKey = process.env.LuisAPIKey;
+var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
+
+const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
+
+// Main dialog with LUIS
+var LUISRecognizer = new builder.LuisRecognizer(LuisModelUrl);
 
 var recognizerSet = [
     new builder.RegExpRecognizer('chitchat.greeting', new RegExp("^hi*")),
@@ -85,6 +90,7 @@ var recognizerSet = [
     new builder.RegExpRecognizer('meme.create.thatwouldbegreat', MemeRegExList[PopularMemeTypes.ThatWouldBeGreat]),
     new builder.RegExpRecognizer('meme.create.whatifitoldyou', MemeRegExList[PopularMemeTypes.WhatIfIToldYou]),
     new builder.RegExpRecognizer('meme.create.trump', MemeRegExList[PopularMemeTypes.Trump]),
+    LUISRecognizer
 ];
 
 // Helper function to pull in the MemeType and redirect the session to the meme creation dialog
@@ -94,13 +100,17 @@ function createMemeRegex(session: any, type: PopularMemeTypes) {
     session.beginDialog('/memes/create', { directmemetype: type as number, toptext: textElements[1], bottomtext: textElements[2] });
 }
 
-var RegExpRecognizerIntentDialog = new builder.IntentDialog({
+var intentRecognizerDialog = new builder.IntentDialog({
     recognizers: recognizerSet,
     recognizeOrder: builder.RecognizeOrder.parallel,
 })
     /*
     .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
     */
+    .onBegin(((function (session, args, next) {
+        session.message.text = session.message.text.toLowerCase();
+        session.routeToActiveDialog();
+    })))
     .matches('meme.create.dosequis', (session, args) => {
         createMemeRegex(session, PopularMemeTypes.DosEquisGuy);
     })
@@ -138,53 +148,13 @@ var RegExpRecognizerIntentDialog = new builder.IntentDialog({
         session.beginDialog('/memes/create', args);
     })
     .onDefault((session) => {
-        appInsights.getClient().trackEvent("RegExp Failure", { message: session.message.text });
-        session.beginDialog('/luis');
-    });
-
-// -- LUIS INTENT RECOGNIZER DIALOG (DIALOG AT /LUIS)
-// Make sure you add code to validate these fields
-var luisAppId = process.env.LuisAppId;
-var luisAPIKey = process.env.LuisAPIKey;
-var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
-
-const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
-
-// Main dialog with LUIS
-var LUISRecognizer = new builder.LuisRecognizer(LuisModelUrl);
-
-var LuisIntentRecognizerDialog = new builder.IntentDialog({
-    recognizers: [LUISRecognizer],
-    recognizeOrder: builder.RecognizeOrder.parallel,
-})
-    /*
-    .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
-    */
-    .onBegin((function (session, args, next) {
-        // this replays the session message text to the recognizer
-        session.routeToActiveDialog();
-    }))
-    .matches('chitchat.greeting', (session, args) => {
-        session.beginDialog('/chitchat/greeting');
-    })
-    .matches('chitchat.help', (session, args) => {
-        session.beginDialog('/chitchat/help');
-    })
-    .matches('chitchat.dismiss', (session, args) => {
-        session.beginDialog('/chitchat/dismiss');
-    })
-    .matches('meme.create', (session, args) => {
-        session.beginDialog('/memes/create', args);
-    })
-    .onDefault((session) => {
         appInsights.getClient().trackEvent("Intent Failure", { message: session.message.text });
         session.send("Not quite sure what you meant there...");
         session.beginDialog('/chitchat/help');
     });
 
 // Dialog Listing
-bot.dialog('/', RegExpRecognizerIntentDialog);
-bot.dialog('/luis', LuisIntentRecognizerDialog);
+bot.dialog('/', intentRecognizerDialog);
 bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
 bot.dialog('/chitchat/help', chitchathelpdialog);
 bot.dialog('/chitchat/dismiss', chitchatdimissdialog);
