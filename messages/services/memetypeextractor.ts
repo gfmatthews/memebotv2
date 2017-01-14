@@ -45,7 +45,7 @@ export class MemetypeExtractor {
     // am i too lazy right now to write it out?  also yes.
     // <HackathonQualityCode>
     private dict: MemeEntityLookupMap<PopularMemeTypes> = {};
-    private keys: String[];
+    private keys;
     // </HackathonQualityCode> 
 
     // AM I JAVASCRIPTING RIGHT YET?
@@ -75,62 +75,24 @@ export class MemetypeExtractor {
         // yes i know its mispelled, but its also mispelled in my LUIS model and that's way too much work to re-train and spell right.
         this.dict["meme.creation3.type::philosopraptor"] = PopularMemeTypes.Philosoraptor;
         this.dict["meme.creation3.type::clarity_clarence"] = PopularMemeTypes.ClarityClarence;
-        this.dict["meme.creation4.type::all_the_things"] = PopularMemeTypes.AllTheThings;
-        this.dict["meme.creation4.type::its_gone"] = PopularMemeTypes.ItsGone;
-        this.dict["meme.creation4.type::no_patrick"] = PopularMemeTypes.NoPatrick;
-        this.dict["meme.creation4.type::sparta_leonidas"] = PopularMemeTypes.SpartaLeonidas;
-        this.dict["meme.creation4.type::skeptical_baby"] = PopularMemeTypes.SkepticalBaby;
-        this.dict["meme.creation4.type::dont_you_squidward"] = PopularMemeTypes.DontYouSquidward;
-        this.dict["meme.creation4.type::ryan_gosling"] = PopularMemeTypes.RyanGosling;
+        this.dict["meme.creation3.type::all_the_things"] = PopularMemeTypes.AllTheThings;
+        this.dict["meme.creation3.type::no_patrick"] = PopularMemeTypes.NoPatrick;
+        this.dict["meme.creation3.type::sparta_leonidas"] = PopularMemeTypes.SpartaLeonidas;
+        this.dict["meme.creation3.type::skeptical_baby"] = PopularMemeTypes.SkepticalBaby;
+        this.dict["meme.creation3.type::dont_you_squidward"] = PopularMemeTypes.DontYouSquidward;
+        this.dict["meme.creation3.type::ryan_gosling"] = PopularMemeTypes.RyanGosling;
         this.dict["meme.creation4.type::spiderman_computer"] = PopularMemeTypes.SpidermanComputer;
-        this.dict["meme.creation5.type::darth_vader"] = PopularMemeTypes.DarthVader;
-        this.dict["meme.creation5.type::embarassed_bunny"] = PopularMemeTypes.EmbarassedBunny;
-        this.dict["meme.creation5.type::clippy"] = PopularMemeTypes.Clippy;
-        this.dict["meme.creation5.type::i_am_disappoint"] = PopularMemeTypes.IAmDisappoint;
-        this.dict["meme.creation5.type::trump"] = PopularMemeTypes.Trump;
-        this.dict["meme.creation5.type::hillary"] = PopularMemeTypes.Hillary;
-        this.dict["meme.creation5.type::ermergerd"] = PopularMemeTypes.Ermergerd;
+        this.dict["meme.creation4.type::darth_vader"] = PopularMemeTypes.DarthVader;
+        this.dict["meme.creation4.type::embarassed_bunny"] = PopularMemeTypes.EmbarassedBunny;
+        this.dict["meme.creation4.type::clippy"] = PopularMemeTypes.Clippy;
+        this.dict["meme.creation4.type::i_am_disappoint"] = PopularMemeTypes.IAmDisappoint;
+        this.dict["meme.creation4.type::trump"] = PopularMemeTypes.Trump;
+        this.dict["meme.creation4.type::hillary"] = PopularMemeTypes.Hillary;
+        this.dict["meme.creation4.type::ermergerd"] = PopularMemeTypes.Ermergerd;
+        this.dict["meme.creation4.type::bad_luck_brian"] = PopularMemeTypes.BadLuckBrian;
+        this.dict["meme.creation4.type::robert_downy_jr"] = PopularMemeTypes.RobertDownyJr;
 
-        this.keys = ["meme.creation1.type::grumpy_cat",
-            "meme.creation1.type::dos_equis_guy",
-            "meme.creation1.type::one_does_not_simply",
-            "meme.creation1.type::batman_robin",
-            "meme.creation1.type::ancient_aliens",
-            "meme.creation1.type::futurama_fry",
-            "meme.creation1.type::x_everywhere",
-            "meme.creation1.type::first_world_problems",
-            "meme.creation1.type::brace_yourselves",
-            "meme.creation1.type::doge",
-            "meme.creation2.type::what_if_i_told_you",
-            "meme.creation2.type::that_would_be_great",
-            "meme.creation2.type::picard_facepalm",
-            "meme.creation2.type::oprah_you_get_a",
-            "meme.creation2.type::yo_dawg",
-            "meme.creation2.type::aint_nobody_got_time",
-            "meme.creation2.type::success_kid",
-            "meme.creation2.type::grandma_internet",
-            "meme.creation2.type::y_u_no",
-            "meme.creation2.type::its_gone",
-            "meme.creation3.type::confession_bear",
-            "meme.creation3.type::socially_awkward_awesome",
-            "meme.creation3.type::philosopraptor",
-            "meme.creation3.type::clarity_clarence",
-            "meme.creation4.type::all_the_things",
-            "meme.creation4.type::its_gone",
-            "meme.creation4.type::no_patrick",
-            "meme.creation4.type::sparta_leonidas",
-            "meme.creation4.type::skeptical_baby",
-            "meme.creation4.type::dont_you_squidward",
-            "meme.creation4.type::ryan_gosling",
-            "meme.creation4.type::spiderman_computer",
-            "meme.creation5.type::darth_vader",
-            "meme.creation5.type::embarassed_bunny",
-            "meme.creation5.type::clippy",
-            "meme.creation5.type::i_am_disappoint",
-            "meme.creation5.type::trump",
-            "meme.creation5.type::hillary",
-            "meme.creation5.type::ermergerd"
-        ];
+        this.keys = Object.keys(this.dict);
     }
 
 }
@@ -176,7 +138,10 @@ export enum PopularMemeTypes {
     Trump = 40181531,
     Hillary = 5153844,
     Ermergerd = 7590469,
-    NyanCat = 32104452
+    NyanCat = 32104452,
+    BadLuckBrian = 2026198,
+    RobertDownyJr = 89633158,
+    ThisIsFine = 80385174
 };
 
 interface MemeEntityLookupMap<T> {

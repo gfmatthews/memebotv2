@@ -67,6 +67,7 @@ MemeRegExList[PopularMemeTypes.AllTheThings] = new RegExp('(.*) (all the .*)');
 MemeRegExList[PopularMemeTypes.ThatWouldBeGreat] = new RegExp('(.*) (that would be great|that\'?d be great)');
 MemeRegExList[PopularMemeTypes.WhatIfIToldYou] = new RegExp('(what if i told you) (.*)');
 MemeRegExList[PopularMemeTypes.Trump] = new RegExp('(we\'re going to.*) (and.*)');
+MemeRegExList[PopularMemeTypes.ThisIsFine] = new RegExp('(.*) (this is just fine|this is fine|it\'s fine)');
 
 // LUIS INTENT RECOGNIZER SETUP
 var luisAppId = process.env.LuisAppId;
@@ -90,6 +91,7 @@ var recognizerSet = [
     new builder.RegExpRecognizer('meme.create.thatwouldbegreat', MemeRegExList[PopularMemeTypes.ThatWouldBeGreat]),
     new builder.RegExpRecognizer('meme.create.whatifitoldyou', MemeRegExList[PopularMemeTypes.WhatIfIToldYou]),
     new builder.RegExpRecognizer('meme.create.trump', MemeRegExList[PopularMemeTypes.Trump]),
+    new builder.RegExpRecognizer('meme.create.thisisfine', MemeRegExList[PopularMemeTypes.ThisIsFine]),
     LUISRecognizer
 ];
 
@@ -134,6 +136,9 @@ var intentRecognizerDialog = new builder.IntentDialog({
     })
     .matches('meme.create.trump', (session, args) => {
         createMemeRegex(session, PopularMemeTypes.Trump);
+    })
+    .matches('meme.create.thisisfine', (session, args) => {
+        createMemeRegex(session, PopularMemeTypes.ThisIsFine);
     })
     .matches('chitchat.greeting', (session, args) => {
         session.beginDialog('/chitchat/greeting');
