@@ -4,15 +4,15 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "applicationinsights": "^0.17.1",
-    "botbuilder": "^3.5.1",
+    "applicationinsights": "^0.17.2",
+    "botbuilder": "^3.5.3",
     "botbuilder-azure": "0.0.1",
     "gulp": "^3.9.1",
-    "gulp-sourcemaps": "^1.9.1",
+    "gulp-sourcemaps": "^1.11.0",
     "gulp-typescript": "^3.1.4",
     "imgflipper": "^1.0.1",
     "restify": "^4.1.1",
-    "typescript": "^2.1.4"
+    "typescript": "^2.1.5"
   },
   "devDependencies": {
     "@types/es6-shim": "^0.31.32"
