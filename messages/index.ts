@@ -32,14 +32,13 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
     openIdMetadata: process.env['BotOpenIdMetadata']
 });
 
-
 var bot = new builder.UniversalBot(connector);
 
 // Dialog versioning makes sure that users who get caught in bug'ed conversations (e.g. what would previously happen
 // when users interacted with the memecreate dialog) get unstuck when the bugs get resolved.
 var dialogVersionOptions = {
     version: 2.0,
-    message: 'My apologies but my brain has just been updated. I need to restart our conversation.',
+    message: 'My apologies but my brain has just been updated. I umm... I forgot where we were. Let\'s start again.',
     resetCommand: /^reset/i
 };
 bot.use(builder.Middleware.dialogVersion(dialogVersionOptions));
@@ -54,8 +53,6 @@ if (useEmulator) {
 } else {
     module.exports = { default: connector.listen() }
 }
-
-// -- ROOT DIALOG SETUP
 
 // -- REGEXP SETUP
 var MemeRegExList = new Map;

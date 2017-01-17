@@ -38,8 +38,6 @@ export class MemetypeExtractor {
         return textElements;
     }
 
-
-
     // this object represents a shitty performing dictionary ish thing
     // is there a fastesr way to do this?  yes, there is.
     // am i too lazy right now to write it out?  also yes.

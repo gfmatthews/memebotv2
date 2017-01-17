@@ -18,38 +18,40 @@ export var memecreationdialog =
             var toptext;
             var alternatetextsuggestion;
 
-            // coming from a reg ex intent that we know about
+            // Three things to extract from our arguments, type, bottomtext, and toptext
+            // Strateg(ER)y - determine if the arguments were passed as part of a direct meme type,
+            // if not, then look in the entities to see if anything is there
+
+            /// -- EXTRACT FROM REGEX
+            // coming from a reg ex intent that we know about.  In those instances this field will be
+            // filled in so it's a good indicator
             if (args.directmemetype) {
                 session.privateConversationData["memetypeentity"] = args.directmemetype;
                 session.privateConversationData["bottomtextentity"] = args.bottomtext;
                 toptext = args.toptext;
             }
-            else {
-                // We came from a LUIS intent
-                if (args.entities) {
+
+            /// -- NO REGEX, EXTRACT FROM ENTITY RECCOMENDATIONS
+            else if (args.entities) {
                     session.privateConversationData["memetypeentity"] = MemeExtractor.getMemeFromEntityList(args.entities);
-
-                    var bottomtextentity = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext');
-
-                    if (bottomtextentity) {
-                        session.privateConversationData["bottomtextentity"] = bottomtextentity.entity;
-                    }
-
-                    var toptextentity = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext');
-                    if (toptextentity) {
-                        toptext = toptextentity.entity;
-                    }
+                    session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext').entity;
+                    var toptextentity = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext').entity;
                 }
-            }
+
+            /// -- TYPE NOT FOUND, GENERATE RANDOM ONE
             if (!session.privateConversationData["memetypeentity"]) {
                 session.privateConversationData["memetypeentity"] = MemeExtractor.getRandomMemeType();
             }
 
-
-            // 
+            /// -- NO TEXT FOUND, CHECK OTHER FIELD
             if (!toptext && !session.privateConversationData["bottomtextentity"]) {
+                // The entity recognizer to find entities only will find things if you match the type EXACTLY.  That's right,
+                // it won't match sub-classed entities if you specify the top level.  Anyway, pertinent info here because we
+                // look at the text field in case bottomtext and top text are not filled in.  If it is, we'll just make the meme
+                // with that text.
                 session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text');
                 alternatetextsuggestion = "";
+                toptext = "";
             }
 
             if (!toptext && !alternatetextsuggestion) {
