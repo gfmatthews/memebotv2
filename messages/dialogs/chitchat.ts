@@ -34,7 +34,7 @@ export var chitchatdimissdialog = new builder.SimpleDialog(function (session, re
         "I get it.  You hate me.  *sniff*.  Send me a Goodbye and I'll go away... I guess...",
         "Done with me so soon? Send me a Goodbye to stop the conversation."
     ];
-
+    ChooseAndSendResponse(DismissResponses, session);
 });
 
 function ChooseAndSendResponse(array, session) {

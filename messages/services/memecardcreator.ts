@@ -2,13 +2,11 @@ import builder = require("botbuilder");
 import botbuilder_azure = require("botbuilder-azure");
 
 export class MemeCardCreationService {
-    private session;
-    private imgurl: string;
+
     private CreatedMemeResponses: string[];
 
-    constructor(_session, _imgurl) {
-        this.session = _session;
-        this.imgurl = _imgurl;
+    constructor() {
+;
 
         this.CreatedMemeResponses = [
             "Wait, don't worry I got this",
@@ -28,24 +26,24 @@ export class MemeCardCreationService {
 
     }
 
-    public createThumbnailCard() {
-        return new builder.ThumbnailCard(this.session)
+    public createThumbnailCard(session, imgurl) {
+        return new builder.ThumbnailCard(session)
             .title(this.CreatedMemeResponses[Math.floor(Math.random() * this.CreatedMemeResponses.length)])
-            .subtitle(this.imgurl)
+            .subtitle(imgurl)
             .text("")
-            .images(this.getCardImages())
-            .buttons(this.getCardActions());
+            .images(this.getCardImages(session, imgurl))
+            .buttons(this.getCardActions(session, imgurl));
     }
 
-    private getCardImages() {
+    private getCardImages(session, imgurl) {
         return [
-            builder.CardImage.create(this.session, this.imgurl)
+            builder.CardImage.create(session, imgurl)
         ];
     }
 
-    private getCardActions() {
+    private getCardActions(session, imgurl) {
         return [
-            builder.CardAction.openUrl(this.session, this.imgurl, 'Open in Browser')
+            builder.CardAction.openUrl(session, imgurl, 'Open in Browser')
         ];
     }
 

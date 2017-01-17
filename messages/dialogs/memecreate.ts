@@ -10,6 +10,7 @@ var MemeExtractor = new MemetypeExtractor();
 import { MemeCaptionService } from '../services/memecreator';
 import { MemeCardCreationService } from '../services/memecardcreator';
 var captionService = new MemeCaptionService();
+var cardCreationService = new MemeCardCreationService();
 
 export var memecreationdialog =
     [
@@ -29,6 +30,7 @@ export var memecreationdialog =
         },
         // Extract top text entity
         function (session, results, next) {
+            session.sendTyping();
             if (results.response) {
                 if (results.response == 'SKIP') {
                     // we tell the user that typing 'SKIP' will skip captioning this part
@@ -66,17 +68,14 @@ export var memecreationdialog =
                 captionService.GenerateResultForMemeCreate(memetype, session.privateConversationData["toptext"], session.privateConversationData["bottomtext"], (url) => {
                     if (url) {
                         appInsights.getClient().trackEvent("MemeCreated", { id: memetype, toptext: session.privateConversationData["toptext"], bottomtext: session.privateConversationData["bottomtext"] });
-                        var cardCreation = new MemeCardCreationService(session, url);
-                        var msg = new builder.Message(session).addAttachment(cardCreation.createThumbnailCard());
-                        session.send(msg);
+                        var replyMsg = new builder.Message(session).addAttachment(cardCreationService.createThumbnailCard(session, url));
+                        session.send(replyMsg);
                     }
                     else {
                         appInsights.getClient().trackEvent("MemeCreationFailure");
                         session.send("Ugh, I'm having a rough day working with all these memes today.  Give me a bit maybe and try again later?  Sorry about that.");
                     }
                 })
-            } else {
-                session.send("Ok");
             }
             session.endConversation();
         }
