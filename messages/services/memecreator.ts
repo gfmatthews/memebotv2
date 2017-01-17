@@ -7,6 +7,7 @@ export class MemeCaptionService {
 
     constructor()
     {
+        // Don't be an ass.  Get your own creds.
         this.username = "GeorgeMatthews";
         this.password = "aoX8rZfIk27869v";
         this.imgflipper = new imgflipperapi(this.username, this.password);

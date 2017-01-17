@@ -5,6 +5,9 @@ export class MemetypeExtractor {
     getMemeFromEntityList(entitylist): number {
         var memetype;
 
+        // this will walk through the entity list looking for matches, when it finds one,
+        // it'll populate the memetype object thus breaking the loop and causing the search to stop
+        // a (very) slightly overloaded use of the every function
         // is this how every works?
         this.keys.every(function (val: string, ind: number) {
             memetype = builder.EntityRecognizer.findEntity(entitylist, val);

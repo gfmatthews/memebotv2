@@ -12,9 +12,7 @@ export var chitchatgreetingdialog = new builder.SimpleDialog(function (session, 
         "Greetings Meme-human, what can I do for you?",
         "Howdy! My master has been really busy tweaking me, I've gotten exposed to a lot more memes lately. What can I make for you?"
     ];
-    var response = GreetingResponses[Math.floor(Math.random() * GreetingResponses.length)];
-    session.send(response);
-    session.endDialog();
+    ChooseAndSendResponse(GreetingResponses, session);
 });
 
 export var chitchathelpdialog = new builder.SimpleDialog(function (session, results) {
@@ -25,9 +23,7 @@ export var chitchathelpdialog = new builder.SimpleDialog(function (session, resu
         "Just want to see a meme? Try saying: show me doge",
         "Want a protip? Try saying: make a meme of shut up and take my money with new Surface Book? on top and shut up and take my money on the bottom"
     ];
-    var response = HelpResponses[Math.floor(Math.random() * HelpResponses.length)];
-    session.send(response);
-    session.endDialog();
+    ChooseAndSendResponse(HelpResponses, session);
 });
 
 export var chitchatdimissdialog = new builder.SimpleDialog(function (session, results) {
@@ -38,9 +34,12 @@ export var chitchatdimissdialog = new builder.SimpleDialog(function (session, re
         "I get it.  You hate me.  *sniff*.  Send me a Goodbye and I'll go away... I guess...",
         "Done with me so soon? Send me a Goodbye to stop the conversation."
     ];
-    var response = DismissResponses[Math.floor(Math.random() * DismissResponses.length)];
-    session.send(response);
-    session.endDialog();
+
 });
 
+function ChooseAndSendResponse(array, session) {
+    var response = array[Math.floor(Math.random() * array.length)];
+    session.send(response);
+    session.endDialog();
+}
 

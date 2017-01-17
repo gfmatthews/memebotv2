@@ -43,7 +43,7 @@ var dialogVersionOptions = {
 };
 bot.use(builder.Middleware.dialogVersion(dialogVersionOptions));
 
-// Add in bot emulator support
+// bot emulator support
 if (useEmulator) {
     var server = restify.createServer();
     server.listen(3978, function () {
