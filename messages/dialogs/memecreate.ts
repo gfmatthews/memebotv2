@@ -69,6 +69,7 @@ export var memecreationdialog =
                     if (url) {
                         appInsights.getClient().trackEvent("MemeCreated", { id: memetype, toptext: session.privateConversationData["toptext"], bottomtext: session.privateConversationData["bottomtext"] });
                         var replyMsg = new builder.Message(session).addAttachment(cardCreationService.createThumbnailCard(session, url));
+                        
                         session.send(replyMsg);
                     }
                     else {
@@ -99,8 +100,15 @@ function PopulateSessionConversationData(session, args) {
     /// -- NO REGEX, EXTRACT FROM ENTITY RECCOMENDATIONS
     else if (args.entities) {
         session.privateConversationData["memetypeentity"] = MemeExtractor.getMemeFromEntityList(args.entities);
-        session.privateConversationData["bottomtextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext').entity;
-        session.privateConversationData["toptextentity"] = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext').entity;
+        
+        var bottomentity = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::bottomtext');
+        var topentity = builder.EntityRecognizer.findEntity(args.entities, 'meme.creation.text::toptext');
+        if (bottomentity) {
+            session.privateConversationData["bottomtextentity"] = bottomentity.entity;
+        }
+        if (topentity) {
+            session.privateConversationData["toptextentity"] = topentity.entity;
+        }
     }
 
     /// -- TYPE NOT FOUND, GENERATE RANDOM ONE
