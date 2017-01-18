@@ -142,7 +142,8 @@ export enum PopularMemeTypes {
     NyanCat = 32104452,
     BadLuckBrian = 2026198,
     RobertDownyJr = 89633158,
-    ThisIsFine = 80385174
+    ThisIsFine = 80385174,
+    IGuaranteeIt = 18446295
 };
 
 interface MemeEntityLookupMap<T> {
