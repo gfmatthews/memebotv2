@@ -37,6 +37,16 @@ export var chitchatdimissdialog = new builder.SimpleDialog(function (session, re
     ChooseAndSendResponse(DismissResponses, session);
 });
 
+export var chitchatdetailsdialog = new builder.SimpleDialog(function (session, results) {
+    session.sendTyping();
+    var DetailsResponses = [
+        "A meme is magic",
+        "Memes are things that you put on Reddit to get karma and self-worth",
+        "Funfact: Memes were first created by Richard Dawkins in the book the Selfish Gene"
+    ];
+    ChooseAndSendResponse(DetailsResponses, session);
+});
+
 function ChooseAndSendResponse(array, session) {
     var response = array[Math.floor(Math.random() * array.length)];
     session.send(response);
