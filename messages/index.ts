@@ -9,6 +9,7 @@ import appInsights = require("applicationinsights");
 import { chitchatgreetingdialog } from './dialogs/chitchat';
 import { chitchathelpdialog } from './dialogs/chitchat';
 import { chitchatdimissdialog } from './dialogs/chitchat';
+import { chitchatdetailsdialog } from './dialogs/chitchat';
 
 import { memecreationdialog } from './dialogs/memecreate';
 import { PopularMemeTypes } from './services/memetypeextractor';
@@ -153,6 +154,9 @@ var intentRecognizerDialog = new builder.IntentDialog({
     .matches('chitchat.dismiss', (session, args) => {
         session.beginDialog('/chitchat/dismiss');
     })
+    .matches('chitchat.details', (session, args) => {
+        session.beginDialog('/chitchat/details');
+    })
     .matches('meme.create', (session, args) => {
         session.beginDialog('/memes/create', args);
     })
@@ -167,6 +171,7 @@ bot.dialog('/', intentRecognizerDialog);
 bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
 bot.dialog('/chitchat/help', chitchathelpdialog);
 bot.dialog('/chitchat/dismiss', chitchatdimissdialog);
+bot.dialog('/chitchat/details', chitchatdetailsdialog);
 bot.dialog('/memes/create', memecreationdialog);
 
 
