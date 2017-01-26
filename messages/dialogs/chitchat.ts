@@ -32,7 +32,7 @@ export var chitchatdimissdialog = new builder.SimpleDialog(function (session, re
         "Want me to stop listening? Send me a message with just the word Goodbye",
         "Am I unwanted? Send me a Goodbye to tell me to go away",
         "I get it.  You hate me.  *sniff*.  Send me a Goodbye and I'll go away... I guess...",
-        "Done with me so soon? Send me a Goodbye to stop the conversation."
+        " ¯\(°_o)/¯"
     ];
     ChooseAndSendResponse(DismissResponses, session);
 });
@@ -43,6 +43,33 @@ export var chitchatdetailsdialog = new builder.SimpleDialog(function (session, r
         "A meme is magic",
         "Memes are things that you put on Reddit to get karma and self-worth",
         "Funfact: Memes were first created by Richard Dawkins in the book the Selfish Gene"
+    ];
+    ChooseAndSendResponse(DetailsResponses, session);
+});
+
+export var chitchatnaughtydialog = new builder.SimpleDialog(function (session, results) {
+    session.sendTyping();
+    var DetailsResponses = [
+        "whoa there, that's umm... that's not...",
+        "wow. not interested",
+        "i think that would go against my programming or something",
+        "Look, I'm on the clock here and that's a bit NSFW if you get my drift",
+        "Uhhhhhhh...",
+        "(╯°□°）╯︵ ┻━┻)",
+        "ಠ_ಠ"
+    ];
+    ChooseAndSendResponse(DetailsResponses, session);
+});
+
+export var chitchatthanksdialog = new builder.SimpleDialog(function (session, results) {
+    session.sendTyping();
+    var DetailsResponses = [
+        "As long as I can make you laugh",
+        "just remember to give me credit",
+        "anytime",
+        "i did good eh?",
+        "great!",
+        "( ͡° ͜ʖ ͡°)"
     ];
     ChooseAndSendResponse(DetailsResponses, session);
 });
