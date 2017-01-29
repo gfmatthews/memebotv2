@@ -6,7 +6,7 @@ var restify = require('restify');
 import appInsights = require("applicationinsights");
 
 // -- IMPORTS FROM INTERNAL MODULES
-import { chitchatgreetingdialog } from './dialogs/chitchat';
+import * as chitchatdialogs from './dialogs/chitchat';
 import { chitchathelpdialog } from './dialogs/chitchat';
 import { chitchatdimissdialog } from './dialogs/chitchat';
 import { chitchatdetailsdialog } from './dialogs/chitchat';
@@ -71,9 +71,9 @@ MemeRegExList[PopularMemeTypes.IGuaranteeIt] = new RegExp('(.*) (i gua?rantee it
 // LUIS INTENT RECOGNIZER SETUP
 var luisAppId = process.env.LuisAppId;
 var luisAPIKey = process.env.LuisAPIKey;
-var luisAPIHostName = 'westus.api.cognitive.microsoft.com';
+var luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
 
-const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v2.0/apps/' + luisAppId + '&subscription-key=' + luisAPIKey + '&verbose=true';
+const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
 
 // Main dialog with LUIS
 var LUISRecognizer = new builder.LuisRecognizer(LuisModelUrl);
@@ -157,10 +157,16 @@ var intentRecognizerDialog = new builder.IntentDialog({
     .matches('chitchat.details', (session, args) => {
         session.beginDialog('/chitchat/details');
     })
+    .matches('chitchat.naughty', (session, args) => {
+        session.beginDialog('/chitchat/naughty');
+    })
+    .matches('chitchat.thanks', (session, args) => {
+        session.beginDialog('/chitchat/thanks');
+    })
     .matches('meme.create', (session, args) => {
         session.beginDialog('/memes/create', args);
     })
-    .onDefault((session) => {
+    .onDefault((session, args) => {
         appInsights.getClient().trackEvent("Intent Failure", { message: session.message.text });
         session.send("Not quite sure what you meant there...");
         session.beginDialog('/chitchat/help');
@@ -168,10 +174,12 @@ var intentRecognizerDialog = new builder.IntentDialog({
 
 // Dialog Listing
 bot.dialog('/', intentRecognizerDialog);
-bot.dialog('/chitchat/greeting', chitchatgreetingdialog);
-bot.dialog('/chitchat/help', chitchathelpdialog);
-bot.dialog('/chitchat/dismiss', chitchatdimissdialog);
-bot.dialog('/chitchat/details', chitchatdetailsdialog);
+bot.dialog('/chitchat/greeting', chitchatdialogs.chitchatgreetingdialog);
+bot.dialog('/chitchat/help', chitchatdialogs.chitchathelpdialog);
+bot.dialog('/chitchat/dismiss', chitchatdialogs.chitchatdimissdialog);
+bot.dialog('/chitchat/details', chitchatdialogs.chitchatdetailsdialog);
+bot.dialog('/chitchat/naughty', chitchatdialogs.chitchatnaughtydialog);
+bot.dialog('/chitchat/thanks', chitchatdialogs.chitchatthanksdialog);
 bot.dialog('/memes/create', memecreationdialog);
 
 
