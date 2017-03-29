@@ -92,6 +92,8 @@ export class MemetypeExtractor {
         this.dict["meme.creation4.type::ermergerd"] = PopularMemeTypes.Ermergerd;
         this.dict["meme.creation4.type::bad_luck_brian"] = PopularMemeTypes.BadLuckBrian;
         this.dict["meme.creation4.type::robert_downy_jr"] = PopularMemeTypes.RobertDownyJr;
+        this.dict["meme.creation.type.seanspicer"] = PopularMemeTypes.SeanSpicer;
+        this.dict["meme.creation.type.youarefakenews"] = PopularMemeTypes.YouAreFakeNews;
 
         this.keys = Object.keys(this.dict);
     }
@@ -143,7 +145,9 @@ export enum PopularMemeTypes {
     BadLuckBrian = 2026198,
     RobertDownyJr = 89633158,
     ThisIsFine = 80385174,
-    IGuaranteeIt = 18446295
+    IGuaranteeIt = 18446295,
+    YouAreFakeNews = 94978641,
+    SeanSpicer = 90884524
 };
 
 interface MemeEntityLookupMap<T> {
