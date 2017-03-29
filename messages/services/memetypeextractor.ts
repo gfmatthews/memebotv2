@@ -146,7 +146,7 @@ export enum PopularMemeTypes {
     RobertDownyJr = 89633158,
     ThisIsFine = 80385174,
     IGuaranteeIt = 18446295,
-    YouAreFakeNews = 94978641,
+    YouAreFakeNews = 94393051,
     SeanSpicer = 90884524
 };
 

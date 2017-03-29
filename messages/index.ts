@@ -103,7 +103,9 @@ var recognizerSet = [
 function createMemeRegex(session: any, type: PopularMemeTypes) {
     appInsights.getClient().trackEvent("MemeCreated-REGEX");
     var textElements = MemeExtractor.getTextElementArrayFromRegExMeme(session, MemeRegExList[type]);
-    session.beginDialog('/memes/create', { directmemetype: type as number, toptext: textElements[1], bottomtext: textElements[2] });
+    
+    // if the reg ex type doesn't usually specify a top text type, this will now skip through that and not prompt the user (by passing at least some content)
+    session.beginDialog('/memes/create', { directmemetype: type as number, toptext: (textElements[1] == ""? " " : textElements[1]), bottomtext: textElements[2] });
 }
 
 var intentRecognizerDialog = new builder.IntentDialog({
