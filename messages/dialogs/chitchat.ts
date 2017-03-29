@@ -21,7 +21,8 @@ export var chitchathelpdialog = new builder.SimpleDialog(function (session, resu
         "You can say things like: make a meme of grumpy cat saying i tried to make a meme once it was awful",
         "Try searching for common memes by saying: find me a meme of batman",
         "Just want to see a meme? Try saying: show me doge",
-        "Want a protip? Try saying: make a meme of shut up and take my money with new Surface Book? on top and shut up and take my money on the bottom"
+        "Want a protip? Try saying: make a meme of shut up and take my money with new Surface Book? on top and shut up and take my money on the bottom",
+        "Protip: For popular memetypes, just say a phrase associated with that meme like - We're going to build a meme and Memebot is going make it"
     ];
     ChooseAndSendResponse(HelpResponses, session);
 });
