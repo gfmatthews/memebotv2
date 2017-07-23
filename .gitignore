@@ -44,3 +44,6 @@ jspm_packages
 !_*.js
 !*gulpfile.js
 /messages/js*
+
+# Damnit OS X
+*.DS_Store
