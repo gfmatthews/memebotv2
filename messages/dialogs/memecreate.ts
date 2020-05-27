@@ -1,6 +1,6 @@
-import builder = require("botbuilder");
-import botbuilder_azure = require("botbuilder-azure");
-import appInsights = require("applicationinsights");
+import * as builder from "botbuilder";
+import * as botbuilder_azure from "botbuilder-azure";
+import * as appInsights from "applicationinsights";
 appInsights.setup(process.env['BotDevAppInsightKey']).start();
 
 import { MemetypeExtractor } from '../services/memetypeextractor';

@@ -1,5 +1,5 @@
-import builder = require("botbuilder");
-import botbuilder_azure = require("botbuilder-azure");
+import * as builder from "botbuilder";
+import * as botbuilder_azure from "botbuilder-azure";
 
 export class MemeCardCreationService {
 

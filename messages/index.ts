@@ -1,9 +1,9 @@
 "use strict";
 // -- IMPORTS FROM EXTERNAL MODULES
-import builder = require("botbuilder");
-import botbuilder_azure = require("botbuilder-azure");
+import * as builder from "botbuilder";
+import * as botbuilder_azure from "botbuilder-azure";
+import * as appInsights from "applicationinsights";
 var restify = require('restify');
-import appInsights = require("applicationinsights");
 
 // -- IMPORTS FROM INTERNAL MODULES
 import * as chitchatdialogs from './dialogs/chitchat';

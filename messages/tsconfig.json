@@ -1,9 +1,18 @@
 {
     "compilerOptions": {
         "target": "es2016",
-        "module": "commonjs",
+        "outDir": "js",
         "sourceMap": true,
-        "outDir": "js"
-        
-    }
+        "moduleResolution": "node"
+    },
+    "include": [
+        "dialogs*",
+        "services*",
+        "index.ts",
+        "mockResponse.ts"
+    ],
+    "exclude": [
+        "**/node_modules",
+        "**/*.d.ts"
+    ]
 }

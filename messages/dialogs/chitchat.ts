@@ -1,5 +1,5 @@
-import builder = require("botbuilder");
-import botbuilder_azure = require("botbuilder-azure");
+import * as builder from "botbuilder";
+import * as botbuilder_azure from "botbuilder-azure";
 var restify = require('restify');
 
 export var chitchatgreetingdialog = new builder.SimpleDialog(function (session, results) {

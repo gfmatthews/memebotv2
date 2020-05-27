@@ -1,4 +1,4 @@
-import imgflipperapi = require('imgflipper');
+import * as imgflipperapi from "imgflipper"; 
 
 export class MemeCaptionService {
     private username: string;
