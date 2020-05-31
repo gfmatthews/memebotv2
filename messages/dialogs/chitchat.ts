@@ -1,8 +1,6 @@
 import * as builder from "botbuilder";
-import * as botbuilder_azure from "botbuilder-azure";
-var restify = require('restify');
 
-export var chitchatgreetingdialog = new builder.SimpleDialog(function (session, results) {
+export var chitchatgreetingdialog = new builder.SimpleDialog(function (session) {
     session.sendTyping();
     var GreetingResponses = [
         "HI THERE! I AM THE AMAZING MEMEBOT AND I LOVE TYPING IN ALL CAPS!",
@@ -15,7 +13,7 @@ export var chitchatgreetingdialog = new builder.SimpleDialog(function (session, 
     ChooseAndSendResponse(GreetingResponses, session);
 });
 
-export var chitchathelpdialog = new builder.SimpleDialog(function (session, results) {
+export var chitchathelpdialog = new builder.SimpleDialog(function (session) {
     session.sendTyping();
     var HelpResponses = [
         "You can say things like: make a meme of grumpy cat saying i tried to make a meme once it was awful",
@@ -27,7 +25,7 @@ export var chitchathelpdialog = new builder.SimpleDialog(function (session, resu
     ChooseAndSendResponse(HelpResponses, session);
 });
 
-export var chitchatdimissdialog = new builder.SimpleDialog(function (session, results) {
+export var chitchatdimissdialog = new builder.SimpleDialog(function (session) {
     session.sendTyping();
     var DismissResponses = [
         "Want me to stop listening? Send me a message with just the word Goodbye",
@@ -38,7 +36,7 @@ export var chitchatdimissdialog = new builder.SimpleDialog(function (session, re
     ChooseAndSendResponse(DismissResponses, session);
 });
 
-export var chitchatdetailsdialog = new builder.SimpleDialog(function (session, results) {
+export var chitchatdetailsdialog = new builder.SimpleDialog(function (session) {
     session.sendTyping();
     var DetailsResponses = [
         "A meme is magic",
@@ -48,7 +46,7 @@ export var chitchatdetailsdialog = new builder.SimpleDialog(function (session, r
     ChooseAndSendResponse(DetailsResponses, session);
 });
 
-export var chitchatnaughtydialog = new builder.SimpleDialog(function (session, results) {
+export var chitchatnaughtydialog = new builder.SimpleDialog(function (session) {
     session.sendTyping();
     var DetailsResponses = [
         "whoa there, that's umm... that's not...",
@@ -62,7 +60,7 @@ export var chitchatnaughtydialog = new builder.SimpleDialog(function (session, r
     ChooseAndSendResponse(DetailsResponses, session);
 });
 
-export var chitchatthanksdialog = new builder.SimpleDialog(function (session, results) {
+export var chitchatthanksdialog = new builder.SimpleDialog(function (session) {
     session.sendTyping();
     var DetailsResponses = [
         "As long as I can make you laugh",

@@ -1,9 +1,13 @@
 {
     "compilerOptions": {
-        "target": "es2016",
-        "outDir": "js",
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "removeComments": false,
+        "preserveConstEnums": true,
         "sourceMap": true,
-        "moduleResolution": "node"
+        "target": "es6",
+        "outDir": "js",
+        "types": [ "node" ]
     },
     "include": [
         "dialogs*",

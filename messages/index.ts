@@ -7,10 +7,6 @@ var restify = require('restify');
 
 // -- IMPORTS FROM INTERNAL MODULES
 import * as chitchatdialogs from './dialogs/chitchat';
-import { chitchathelpdialog } from './dialogs/chitchat';
-import { chitchatdimissdialog } from './dialogs/chitchat';
-import { chitchatdetailsdialog } from './dialogs/chitchat';
-
 import { memecreationdialog } from './dialogs/memecreate';
 import { PopularMemeTypes } from './services/memetypeextractor';
 import { MemetypeExtractor } from './services/memetypeextractor';
@@ -18,7 +14,6 @@ import { MemetypeExtractor } from './services/memetypeextractor';
 // -- RUNTIME SYSTEM SETUP WORK
 // Configure Application Insights
 appInsights.setup(process.env['BotDevAppInsightKey']).start();
-var insightsKey = process.env['BotDevAppInsightKey'];
 
 // Instantiate Meme Extractor Object
 var MemeExtractor = new MemetypeExtractor();
@@ -115,67 +110,67 @@ var intentRecognizerDialog = new builder.IntentDialog({
     /*
     .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
     */
-    .onBegin(((function (session, args, next) {
+    .onBegin(((function (session) {
         session.message.text = session.message.text.toLowerCase();
         // noticed that our RegEx list up there only does stuff in lower case?  converting the human 
         // message to lower case ensures consistent recognition.
         session.routeToActiveDialog();
     })))
-    .matches('meme.create.dosequis', (session, args) => {
+    .matches('meme.create.dosequis', (session) => {
         createMemeRegex(session, PopularMemeTypes.DosEquisGuy);
     })
-    .matches('meme.create.onedoesnotsimply', (session, args) => {
+    .matches('meme.create.onedoesnotsimply', (session) => {
         createMemeRegex(session, PopularMemeTypes.OneDoesNotSimply);
     })
-    .matches('meme.create.xeverywhere', (session, args) => {
+    .matches('meme.create.xeverywhere', (session) => {
         createMemeRegex(session, PopularMemeTypes.XEverywhere);
     })
-    .matches('meme.create.nedstark', (session, args) => {
+    .matches('meme.create.nedstark', (session) => {
         createMemeRegex(session, PopularMemeTypes.NedStarkBrace);
     })
-    .matches('meme.create.allthethings', (session, args) => {
+    .matches('meme.create.allthethings', (session) => {
         createMemeRegex(session, PopularMemeTypes.AllTheThings);
     })
-    .matches('meme.create.thatwouldbegreat', (session, args) => {
+    .matches('meme.create.thatwouldbegreat', (session) => {
         createMemeRegex(session, PopularMemeTypes.ThatWouldBeGreat);
     })
-    .matches('meme.create.whatifitoldyou', (session, args) => {
+    .matches('meme.create.whatifitoldyou', (session) => {
         createMemeRegex(session, PopularMemeTypes.WhatIfIToldYou);
     })
-    .matches('meme.create.trump', (session, args) => {
+    .matches('meme.create.trump', (session) => {
         createMemeRegex(session, PopularMemeTypes.Trump);
     })
-    .matches('meme.create.thisisfine', (session, args) => {
+    .matches('meme.create.thisisfine', (session) => {
         createMemeRegex(session, PopularMemeTypes.ThisIsFine);
     })
-    .matches('meme.create.iguaranteeit', (session, args) => {
+    .matches('meme.create.iguaranteeit', (session) => {
         createMemeRegex(session, PopularMemeTypes.IGuaranteeIt);
     })
-    .matches('meme.create.youarefakenews', (session, args) => {
+    .matches('meme.create.youarefakenews', (session) => {
         createMemeRegex(session, PopularMemeTypes.YouAreFakeNews);
     })
-    .matches('chitchat.greeting', (session, args) => {
+    .matches('chitchat.greeting', (session) => {
         session.beginDialog('/chitchat/greeting');
     })
-    .matches('chitchat.help', (session, args) => {
+    .matches('chitchat.help', (session) => {
         session.beginDialog('/chitchat/help');
     })
-    .matches('chitchat.dismiss', (session, args) => {
+    .matches('chitchat.dismiss', (session) => {
         session.beginDialog('/chitchat/dismiss');
     })
-    .matches('chitchat.details', (session, args) => {
+    .matches('chitchat.details', (session) => {
         session.beginDialog('/chitchat/details');
     })
-    .matches('chitchat.naughty', (session, args) => {
+    .matches('chitchat.naughty', (session) => {
         session.beginDialog('/chitchat/naughty');
     })
-    .matches('chitchat.thanks', (session, args) => {
+    .matches('chitchat.thanks', (session) => {
         session.beginDialog('/chitchat/thanks');
     })
     .matches('meme.create', (session, args) => {
         session.beginDialog('/memes/create', args);
     })
-    .onDefault((session, args) => {
+    .onDefault((session) => {
         appInsights.getClient().trackEvent("Intent Failure", { message: session.message.text });
         session.send("Not quite sure what you meant there...");
         session.beginDialog('/chitchat/help');
