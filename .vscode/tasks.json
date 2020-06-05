@@ -6,7 +6,7 @@
 			"command": "host start",
 			"problemMatcher": "$func-watch",
 			"options": {
-				"cwd": "messages/"
+				"cwd": "${workspaceFolder}/messages/"
 			},
 			"isBackground": true,
 			"dependsOn": "npm build"
@@ -14,7 +14,7 @@
 		{
 			"type": "shell",
 			"options": {
-				"cwd": "messages/"
+				"cwd": "${workspaceFolder}/messages/"
 			},
 			"label": "npm build",
 			"command": "npm run build",
@@ -25,7 +25,7 @@
 			"type": "shell",
 			"label": "npm install",
 			"options": {
-				"cwd": "messages/"
+				"cwd": "${workspaceFolder}/messages/"
 			},
 			"command": "npm install"
 		},
@@ -34,7 +34,7 @@
 			"label": "npm prune",
 			"command": "npm prune --production",
 			"options": {
-				"cwd": "messages/"
+				"cwd": "${workspaceFolder}/messages/"
 			},
 			"dependsOn": "npm build",
 			"problemMatcher": []
